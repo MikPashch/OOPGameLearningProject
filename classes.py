@@ -70,3 +70,15 @@ class Bullet(Shell):
         self.y -= self.vy
 
 
+class Bomb(Shell):  # class for shells attacks from air weapon
+    def __init__(self, x, y, live=1, side_x=50, side_y=50):
+        super().__init__(x, y, live, side_x, side_y)
+
+    def draw(self, screen):
+        screen.blit(BOMB, (self.x, self.y))
+
+    def move(self):
+        if self.y + self.side_y < HEIGHT:
+            self.y += AY
+        else:
+            return False

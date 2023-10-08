@@ -1,31 +1,9 @@
 import math
 from random import randint, randrange
-from classes import Rocket, Bullet, Shell
-from constants import WHITE, WIDTH, HEIGHT, FPS, BOMB, AY
+from classes import Rocket, Bullet, Bomb
+from constants import WHITE, WIDTH, HEIGHT, FPS, TANK, HELICOPTER, JET
 import pygame
 
-
-TANK = pygame.image.load('images/tank.png')
-TANK.set_colorkey(WHITE)
-
-JET = pygame.image.load('images/jet.png')
-JET.set_colorkey(WHITE)
-
-HELICOPTER = pygame.image.load('images/helicopter.png')
-HELICOPTER.set_colorkey(WHITE)
-
-class Bomb(Shell):  # class for shells attacks from air weapon
-    def __init__(self, x, y, live=1, side_x=50, side_y=50):
-        super().__init__(x, y, live, side_x, side_y)
-
-    def draw(self, screen):
-        screen.blit(BOMB, (self.x, self.y))
-
-    def move(self):
-        if self.y + self.side_y < HEIGHT:
-            self.y += AY
-        else:
-            bombs.remove(self)
 
 class Target:
     def __init__(self, side_x, side_y, vx, vy, points=0, live=1):
@@ -266,7 +244,8 @@ while not finished:
                 jet.new_jet()
 
     for bomb in bombs:
-        bomb.move()
+        if bomb.move() == False:
+             bombs.remove(bomb)
         for tank in tanks:
             if bomb.hitting(tank) and tank.live:
                 tank.live -= 1
