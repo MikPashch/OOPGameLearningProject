@@ -1,81 +1,8 @@
 import math
-from random import randint, randrange
-from classes import Rocket, Bullet, Bomb
-from constants import WHITE, WIDTH, HEIGHT, FPS, TANK, HELICOPTER, JET
+from random import randint
+from classes import Rocket, Bullet, Target, Jet, Helicopter
+from constants import WHITE, WIDTH, HEIGHT, FPS, TANK
 import pygame
-
-
-class Target:
-    def __init__(self, side_x, side_y, vx, vy, points=0, live=1):
-        self.side_x = side_x
-        self.side_y = side_y
-        self.vx = vx
-        self.vy = vy
-        self.points = points
-        self.live = live
-
-    def hit(self, points=1):
-        """Missing shell into the goal."""
-        self.points += points
-
-
-class Jet(Target):
-    def __init__(self, side_x=90, side_y=90, vx=5, vy=5):
-        super().__init__(side_x, side_y, vx, vy, points=0, live=1)
-        self.x = randrange(0, WIDTH - self.side_x, 50)
-        self.y = 10 + self.side_y
-
-    def draw(self):
-        screen.blit(JET, (self.x, self.y))
-
-    def toss_bomb(self):
-        if self.x % 300 == 0:
-            global mike
-            mike += 1
-            new_bomb = Bomb(self.x, self.y)
-            bombs.append(new_bomb)
-
-    def move(self):
-        self.x += self.vx
-        if self.x + self.side_x > WIDTH or self.x < 0:
-            self.vx *= -1
-
-    def new_jet(self):  # Initialization of new target
-        self.live = 1
-        self.points = 0
-        self.x = randrange(0, WIDTH - self.side_x, 50)
-        self.y = 10 + self.side_y
-
-
-class Helicopter(Target):
-    def __init__(self, side_x=90, side_y=90, vx=3, vy=3):
-        super().__init__(side_x, side_y, vx, vy, points=0, live=1)
-        self.x = randrange(0, WIDTH - self.side_x, 90)
-        self.y = randint(0 + self.side_y, 2 * self.side_y)
-
-    def draw(self):
-        screen.blit(HELICOPTER, (self.x, self.y))
-
-    def toss_bomb(self):
-        if self.x % 300 == 0:
-            global mike
-            mike += 1
-            new_bomb = Bomb(self.x, self.y)
-            bombs.append(new_bomb)
-
-    def move(self):
-        self.x += self.vx
-        self.y += self.vy
-        if self.x + self.side_x > WIDTH or self.x < 0:
-            self.vx *= -1
-        if self.y + self.side_y > HEIGHT / 2 or self.y < 0:
-            self.vy *= -1
-
-    def new_helicopter(self):  # Initialization of new helicopter
-        self.live = 1
-        self.points = 0
-        self.x = randrange(0, WIDTH - self.side_x, 90)
-        self.y = randint(0 + self.side_y, 2 * self.side_y)
 
 
 class Tank(Target):
@@ -101,7 +28,7 @@ class Tank(Target):
         """
         Shooting from Tank
         """
-        global rockets, mike
+        global rockets, score
         new_rocket = Rocket(self.x, self.y)
         new_rocket.side_x += 5
         self.an = math.atan2((eve.pos[1] - new_rocket.y), (eve.pos[0] - new_rocket.x))
@@ -116,8 +43,8 @@ class Tank(Target):
         """
         Shooting from Tank
         """
-        global bullets, mike
-        mike += 1
+        global bullets, score
+        score += 1
         new_bullet = Bullet(self.x, self.y)
         self.an = math.atan2((eve.pos[1] - new_bullet.y), (eve.pos[0] - new_bullet.x))
         new_bullet.vx = self.f2_power * math.cos(self.an)
@@ -156,7 +83,7 @@ class Tank(Target):
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-mike = 0
+score = 0
 bullets = []
 rockets = []
 bombs = []
@@ -177,10 +104,10 @@ while not finished:
     tanks = [tank1, tank2]
     tank1.draw(), tank1.move()
     tank2.draw()
-    target1.draw(), target1.move(), target1.toss_bomb()
-    target2.draw(), target2.move(), target2.toss_bomb()
-    target3.draw(), target3.move(), target3.toss_bomb()
-    target4.draw(), target4.move(), target4.toss_bomb()
+    target1.draw(screen), target1.move(), target1.toss_bomb(score, bombs)
+    target2.draw(screen), target2.move(), target2.toss_bomb(score, bombs)
+    target3.draw(screen), target3.move(), target3.toss_bomb(score, bombs)
+    target4.draw(screen), target4.move(), target4.toss_bomb(score, bombs)
 
     for b in bullets:
         if b.live == 0 or b.x > WIDTH or b.x < 0 or b.y < 0 or b.y > HEIGHT:

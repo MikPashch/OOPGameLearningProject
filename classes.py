@@ -1,6 +1,7 @@
 # classes of the game.
 import pygame
-from constants import ROCKET, BULLET, BOMB, HEIGHT, AY
+from constants import ROCKET, BULLET, BOMB, HEIGHT, AY, WIDTH, JET, HELICOPTER
+from random import randint, randrange
 
 
 class Shell():
@@ -71,6 +72,7 @@ class Bullet(Shell):
 
 
 class Bomb(Shell):  # class for shells attacks from air weapon
+
     def __init__(self, x, y, live=1, side_x=50, side_y=50):
         super().__init__(x, y, live, side_x, side_y)
 
@@ -82,3 +84,74 @@ class Bomb(Shell):  # class for shells attacks from air weapon
             self.y += AY
         else:
             return False
+        
+
+class Target:
+    def __init__(self, side_x, side_y, vx, vy, points=0, live=1):
+        self.side_x = side_x
+        self.side_y = side_y
+        self.vx = vx
+        self.vy = vy
+        self.points = points
+        self.live = live
+
+    def hit(self, points=1):
+        """Missing shell into the goal."""
+        self.points += points
+
+
+class Jet(Target):
+    def __init__(self, side_x=90, side_y=90, vx=5, vy=5):
+        super().__init__(side_x, side_y, vx, vy, points=0, live=1)
+        self.x = randrange(0, WIDTH - self.side_x, 50)
+        self.y = 10 + self.side_y
+
+    def draw(self, screen):
+        screen.blit(JET, (self.x, self.y))
+
+    def toss_bomb(self, score, bombs):
+        if self.x % 300 == 0:
+            score += 1
+            new_bomb = Bomb(self.x, self.y)
+            bombs.append(new_bomb)
+
+    def move(self):
+        self.x += self.vx
+        if self.x + self.side_x > WIDTH or self.x < 0:
+            self.vx *= -1
+
+    def new_jet(self):  # Initialization of new target
+        self.live = 1
+        self.points = 0
+        self.x = randrange(0, WIDTH - self.side_x, 50)
+        self.y = 10 + self.side_y
+
+
+class Helicopter(Target):
+    def __init__(self, side_x=90, side_y=90, vx=3, vy=3):
+        super().__init__(side_x, side_y, vx, vy, points=0, live=1)
+        self.x = randrange(0, WIDTH - self.side_x, 90)
+        self.y = randint(0 + self.side_y, 2 * self.side_y)
+
+    def draw(self, screen):
+        screen.blit(HELICOPTER, (self.x, self.y))
+
+    def toss_bomb(self, score, bombs):
+        if self.x % 300 == 0:
+            score += 1
+            new_bomb = Bomb(self.x, self.y)
+            bombs.append(new_bomb)
+
+    def move(self):
+        self.x += self.vx
+        self.y += self.vy
+        if self.x + self.side_x > WIDTH or self.x < 0:
+            self.vx *= -1
+        if self.y + self.side_y > HEIGHT / 2 or self.y < 0:
+            self.vy *= -1
+
+    def new_helicopter(self):  # Initialization of new helicopter
+        self.live = 1
+        self.points = 0
+        self.x = randrange(0, WIDTH - self.side_x, 90)
+        self.y = randint(0 + self.side_y, 2 * self.side_y)
