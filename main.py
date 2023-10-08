@@ -1,25 +1,9 @@
 import math
 from random import randint, randrange
+from classes import Rocket, Bullet, Shell
+from constants import WHITE, WIDTH, HEIGHT, FPS, BOMB, AY
 import pygame
-from abc import ABC
 
-FPS = 30
-AY = 9.8  # acceleration force
-
-# screen size and color
-WIDTH = 800
-HEIGHT = 600
-WHITE = 0xFFFFFF
-
-# images of game
-ROCKET = pygame.image.load('images/rocket.png')
-ROCKET.set_colorkey(WHITE)
-
-BULLET = pygame.image.load('images/bullet.png')
-BULLET.set_colorkey(WHITE)
-
-BOMB = pygame.image.load('images/bomb.png')
-BOMB.set_colorkey(WHITE)
 
 TANK = pygame.image.load('images/tank.png')
 TANK.set_colorkey(WHITE)
@@ -30,64 +14,11 @@ JET.set_colorkey(WHITE)
 HELICOPTER = pygame.image.load('images/helicopter.png')
 HELICOPTER.set_colorkey(WHITE)
 
-
-class Shell(ABC):
-    def __init__(self, x, y, live, side_x, side_y):
-        """ class Shell - the parent clas for all types of a shells.
-        """
-        self.screen = pygame.Surface
-        self.x = x
-        self.y = y
-        self.live = live
-        self.side_x = side_x
-        self.side_y = side_y
-        self.vx = 10
-        self.vy = 10
-
-    def move(self):
-        """
-        Moving the TanksShell with speed vx and vy
-        """
-        self.x += self.vx
-        self.y -= self.vy
-
-    def hitting(self, obj):
-        """The function checks if the given object collides with the target described in the object. obj.
-
-        Args:
-            obj: The object to check for collision.
-        Returns:
-            Returns True if the ball and the target collide. Otherwise, returns False.
-        """
-        if (self.x + self.side_x >= obj.x and self.x <= obj.x + obj.side_x
-                and self.y <= obj.y + obj.side_y and self.y + self.side_y >= obj.y):
-            self.live = 0
-            return True
-        else:
-            return False
-
-
-class Rocket(Shell):
-    def __init__(self, x, y, live=1, side_x=32, side_y=32):
-        super().__init__(x, y, live, side_x, side_y)
-
-    def draw(self):
-        screen.blit(ROCKET, (self.x, self.y))
-
-
-class Bullet(Shell):
-    def __init__(self, x, y, live=1, side_x=32, side_y=32):
-        super().__init__(x, y, live, side_x, side_y)
-
-    def draw(self):
-        screen.blit(BULLET, (self.x, self.y))
-
-
 class Bomb(Shell):  # class for shells attacks from air weapon
     def __init__(self, x, y, live=1, side_x=50, side_y=50):
         super().__init__(x, y, live, side_x, side_y)
 
-    def draw(self):
+    def draw(self, screen):
         screen.blit(BOMB, (self.x, self.y))
 
     def move(self):
@@ -96,10 +27,8 @@ class Bomb(Shell):  # class for shells attacks from air weapon
         else:
             bombs.remove(self)
 
-
 class Target:
     def __init__(self, side_x, side_y, vx, vy, points=0, live=1):
-        self.screen = screen
         self.side_x = side_x
         self.side_y = side_y
         self.vx = vx
@@ -279,17 +208,17 @@ while not finished:
         if b.live == 0 or b.x > WIDTH or b.x < 0 or b.y < 0 or b.y > HEIGHT:
             bullets.remove(b)
         else:
-            b.draw()
+            b.draw(screen)
     for r in rockets:
         if r.live == 0 or r.x > WIDTH or r.x < 0 or r.y < 0 or r.y > HEIGHT:
             rockets.remove(r)
         else:
-            r.draw()
+            r.draw(screen)
     for bomb in bombs:
         if bomb.live == 0 or bomb.x > WIDTH or bomb.x < 0 or bomb.y < 0 or bomb.y > HEIGHT:
             bombs.remove(bomb)
         else:
-            bomb.draw()
+            bomb.draw(screen)
     pygame.display.update()
 
     clock.tick(FPS)
