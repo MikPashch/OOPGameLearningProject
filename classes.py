@@ -83,8 +83,6 @@ class Bomb(Shell):  # class for shells attacks from air weapon
     def move(self):
         if self.y + self.side_y < HEIGHT:
             self.y += AY
-        else:
-            return False
         
 
 class Target:
