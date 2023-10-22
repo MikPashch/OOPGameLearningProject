@@ -1,11 +1,7 @@
 import pygame
 
-FPS = 30 #velosity of screen updating
-AY = 9.8  # acceleration force
+# screen color
 
-# screen size and color
-WIDTH = 800
-HEIGHT = 600
 WHITE = 0xFFFFFF
 
 # images of game

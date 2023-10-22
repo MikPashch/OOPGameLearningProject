@@ -1,7 +1,11 @@
 from classes import Jet, Helicopter, Tank
-from constants import WHITE, WIDTH, HEIGHT, FPS
+from constants import WHITE
 import pygame
 
+
+WIDTH = 800
+HEIGHT = 600
+FPS = 30 #velosity of screen updating
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))

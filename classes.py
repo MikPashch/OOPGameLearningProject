@@ -2,8 +2,12 @@
 import pygame
 import math
 from random import randint, randrange
-from constants import ROCKET, BULLET, BOMB, HEIGHT, AY, WIDTH, JET, HELICOPTER, TANK
+from constants import ROCKET, BULLET, BOMB, JET, HELICOPTER, TANK
 
+WIDTH = 800
+HEIGHT = 600
+FPS = 30 #velosity of screen updating
+AY = 9.8  # acceleration force
 
 class Shell():
 
@@ -80,9 +84,11 @@ class Bomb(Shell):  # class for shells attacks from air weapon
     def draw(self, screen):
         screen.blit(BOMB, (self.x, self.y))
 
+    
     def move(self):
-        if self.y + self.side_y < HEIGHT:
-            self.y += AY
+        if self.y + self.side_y > HEIGHT:
+            return False
+        self.y += AY
         
 
 class Target:
